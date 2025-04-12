@@ -4,18 +4,25 @@ def binary_search_iterative(arr, target):
 
     while low <= high:
         mid = (low + high) // 2
+
         if arr[mid] == target:
             return mid
-        elif target > arr[mid]:
-            low = mid + 1
-        else:
+        elif arr[mid] > target:
             high = mid - 1
+        else:
+            low = mid + 1
 
     return -1
 
 
-def binary_search_recursive(): return
+def binary_search_recursive(arr, target, start, end):
+    if start > end:
+        return -1
 
-
-test = [1, 3, 5, 7, 9, 11, 13]
-print(binary_search_iterative(test, 5))
+    mid = (start + end) // 2
+    if arr[mid] == target:
+        return mid
+    elif target > arr[mid]:
+        return binary_search_recursive(arr, target, mid + 1, end)
+    else:
+        return binary_search_recursive(arr, target, start, mid - 1)
