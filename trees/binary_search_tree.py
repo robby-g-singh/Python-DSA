@@ -14,7 +14,6 @@ class BinarySearchTree:
 
     def insert(self, val):
         new_node = TreeNode(val)
-
         # inserting into an empty tree
         if not self.root:
             self.root = new_node
@@ -43,29 +42,36 @@ class BinarySearchTree:
         if not root:
             return None
 
-        if key < root.val:
+        if key < root.val:  # search for the Node where node.val == key
             root.left = self.delete(root.left, key)
         elif key > root.val:
             root.right = self.delete(root.right, key)
-        else:
-            # Node found
-            if not root.left and not root.right:
+        else:  # Node found
+            if not root.left and not root.right:  # Case 1: node to be deleted has no children
                 return None
-
-            if not root.left:
+            elif not root.left:  # Case 2: node to be deleted has one child node. Return the existing node
                 return root.right
             elif not root.right:
                 return root.left
-
-            min_larger_node = self.get_min(root.right)
-            root.val = min_larger_node.val
-            root.right = self.delete(root.right, min_larger_node.val)
-
+            else:  # Case 3: node to be deleted has two children
+                # find the minimum value in the right subtree of the node we want to delete. because that value will be
+                # the next contender for taking the place of this current node:
+                min_larger_node = self.get_min(root.right)
+                # once the min of the right subtree is found, overwrite the current node we want to delete with the
+                # min value of the right subtree:
+                root.val = min_larger_node.val
+                # now delete the original min value node from the right subtree. this is done by passing the right
+                # subtree and the value of min_larger_node. since it is the most minimum value of the right subtree,
+                # it will have no children - and therefore deleted and set to None.
+                root.right = self.delete(root.right, min_larger_node.val)
+        # return the root to continue keeping track of the root of the tree as a whole, but also subtrees that are
+        # passed to the delete function.
         return root
 
     def search(self, key):
         current = self.root
-
+        # similar behavior to Binary Search, if the current node == key - return True
+        # otherwise, based on whether the current.val > or < key - set current to either the left or right subtree
         while current:
             if current.val == key:
                 return True
