@@ -7,31 +7,24 @@ class MaxHeap:
         self.__percolateUp(len(self.heap) - 1)
 
     def getMax(self):
-        if not self.heap:
-            return None
-
-        return self.heap[0]
+        return self.heap[0] if self.heap else None
 
     def removeMax(self):
-        if len(self.heap) > 1:
-            max_val = self.heap[0]
-            self.heap[0] = self.heap[-1]
-            del self.heap[-1]
-            self.__maxHeapify(0)
-            return max_val
-        elif len(self.heap) == 1:
-            max_val = self.heap[0]
-            del self.heap[0]
-            return max_val
-        else:
+        if len(self.heap) == 0:
             return None
+        if len(self.heap) == 1:
+            return self.heap.pop()
+
+        max_val = self.heap[0]
+        self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]
+        self.heap.pop()
+        self.__maxHeapify(0)
+        return max_val
 
     def __percolateUp(self, index):
         parent = (index - 1) // 2
-
         if index <= 0:
             return
-
         if self.heap[parent] < self.heap[index]:
             self.heap[parent], self.heap[index] = self.heap[index], self.heap[parent]
             self.__percolateUp(parent)
@@ -51,7 +44,7 @@ class MaxHeap:
             self.__maxHeapify(largest)
 
     def buildHeap(self, arr):
-        self.heap = arr
+        self.heap = arr[:]
         for i in range(len(arr)//2 - 1, -1, -1):
             self.__maxHeapify(i)
 
