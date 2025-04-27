@@ -22,12 +22,14 @@ class MaxHeap:
         return max_val
 
     def __percolateUp(self, index):
-        parent = (index - 1) // 2
-        if index <= 0:
-            return
-        if self.heap[parent] < self.heap[index]:
-            self.heap[parent], self.heap[index] = self.heap[index], self.heap[parent]
-            self.__percolateUp(parent)
+        while index > 0:
+            parent = (index - 1) // 2
+
+            if self.heap[parent] < self.heap[index]:
+                self.heap[parent], self.heap[index] = self.heap[index], self.heap[parent]
+                index = parent
+            else:
+                break
 
     def __maxHeapify(self, index):
         left = (index * 2) + 1
