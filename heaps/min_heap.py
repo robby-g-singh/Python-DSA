@@ -22,25 +22,31 @@ class MinHeap:
         return min_val
 
     def __percolateUp(self, index):
-        parent = (index - 1) // 2
-        if index <= 0:
-            return
-        elif self.heap[parent] > self.heap[index]:
-            self.heap[parent], self.heap[index] = self.heap[index], self.heap[parent]
-            self.__percolateUp(parent)
+        while index > 0:
+            parent = (index - 1) // 2
+            if self.heap[parent] > self.heap[index]:
+                self.heap[parent], self.heap[index] = self.heap[index], self.heap[parent]
+                index = parent
+            else:
+                break
 
     def __minHeapify(self, index):
-        left = (index * 2) + 1
-        right = (index * 2) + 2
-        smallest = index
+        size = len(self.heap)
 
-        if len(self.heap) > left and self.heap[smallest] > self.heap[left]:
-            smallest = left
-        if len(self.heap) > right and self.heap[smallest] > self.heap[right]:
-            smallest = right
-        if smallest != index:
-            self.heap[smallest], self.heap[index] = self.heap[index], self.heap[smallest]
-            self.__minHeapify(smallest)
+        while index < size:
+            left = (index * 2) + 1
+            right = (index * 2) + 2
+            smallest = index
+
+            if left < size and self.heap[smallest] > self.heap[left]:
+                smallest = left
+            if right < size and self.heap[smallest] > self.heap[right]:
+                smallest = right
+            if smallest != index:
+                self.heap[smallest], self.heap[index] = self.heap[index], self.heap[smallest]
+                index = smallest
+            else:
+                break
 
     def buildHeap(self, arr):
         self.heap = arr[:]
