@@ -10,81 +10,72 @@ class Trie:
         self.root = TrieNode()
 
     @staticmethod
+    # returns a value in range of 0-25 based on ASCII values of passed character compared with 'a'
+    # the returned value will serve as an index to insert to check the children array based on the alphabetical
+    # placement provided by this returned index value
     def get_index(letter):
         return ord(letter) - ord('a')
 
     def insert(self, key):
-        if key is None:
+        if key is None:  # base case for passing a null key value
             return False
 
-        key = key.lower()
-        current = self.root
+        key = key.lower()  # base case operation to only deal with lowercase characters
+        current = self.root  # initialize a current variable to iterate through the Trie
 
-        # iterate over each letter
-        # if letter exists, go down a level
-        # else simply create a Trie Node and go down a level
+        for letter in key:  # loop through the key value parameter
+            index = self.get_index(letter)  # retrieve the index the letter would be stored in
 
-        for letter in key:
-            index = self.get_index(letter)
-
+            # if the current index is vacant, store the new node with value letter here
             if current.children[index] is None:
                 current.children[index] = TrieNode(letter)
-                print(letter, "inserted")
 
-            current = current.children[index]
+            current = current.children[index]  # iterate to the next level in the Trie
 
-        current.is_end_word = True
-        print("'" + key + "' inserted")
+        current.is_end_word = True  # once the loop is exited, set the current char as the end of the word
 
     def search(self, key):
+        # similar base case and operations as seen above
         if key is None:
             return False
 
         key = key.lower()
-
         current = self.root
 
-        # iterative over each letter in the key
-        # if the letter doesn't exist, return False
-        # if the letter exists, go down a level
-        # return True only if leaf node reached and Trie has been traversed based on length of the key
-
+        # loop through the key value parameter
         for letter in key:
             index = self.get_index(letter)
+            # if the index where the letter should be in the Trie is vacant, it means the word is not in the Trie.
+            # Return False
             if current.children[index] is None:
                 return False
-            current = current.children[index]
+            current = current.children[index]  # iterate to next level in the Trie
 
-        if current is not None and current.is_end_word:
-            return True
-
-        return False
+        # once the key has been iterated over via the above for loop, and current is not Null and is_end_word = True,
+        # return True. otherwise, return False:
+        return current.is_end_word
 
     def delete(self, key):
-        if not key:
-            return
+        def _delete(node, word, depth):  # helper function
+            if node is None:
+                return False
 
-        stack = []  # stack to hold (parent, char_index)
-        node = self.root
+            if depth == len(word):  # if reached the end of the word
+                if not node.is_end_word:  # if word doesn't actually exist in Trie
+                    return False
+                node.is_end_word = False  # otherwise, undo the flag in order to delete
+                return all(child is None for child in node.children)  # check to verify no children
 
-        for letter in key:
-            index = self.get_index(letter)
-            if not node.children[index]:
-                # word doesn't exist
-                return
-            stack.append((node, index))
-            node = node.children[index]
+            index = self.get_index(word[depth])  # retrieve the index based on alphabetical placement of the char
+            child_node = node.children[index]  # set a variable for the node to delete
 
-        # Un-mark the end of the word
-        if not node.is_end_word:
-            return
-        node.is_end_word = False
+            should_delete_child = _delete(child_node, word, depth + 1)  # pass that node to the _delete function
 
-        # backtrack and clean up unnecessary nodes
-        for parent, index in reversed(stack):
-            child = parent.children[index]
+            if should_delete_child:  # if it can be deleted, i.e. has no children and not end
+                node.children[index] = None  # remove reference to child node
+                # check to see if current node can be deleted as well:
+                return not node.is_end_word and all(child is None for child in node.children)
 
-            if child.is_end_word or any(child.children):
-                break
-            parent.children[index] = None
+            return False  # word exists but cannot delete the node (still needed)
 
+        _delete(self.root, key, 0)  # pass variables to _delete helper function
