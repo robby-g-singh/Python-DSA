@@ -26,20 +26,44 @@ class Graph:
             traversal.append(current)  # update the traversal list
 
             for neighbor in self.adj[current]:  # loop for the adjacent list for current
-                if neighbor not in discovered:  # if neighbor has not been visisited: add to discovered & queue
+                if neighbor not in discovered:  # if neighbor has not been visited: add to discovered & queue
                     discovered.add(neighbor)
                     queue.append(neighbor)
 
         return traversal  # return the order traversed!
 
+    def dfs_iterative(self, start):
+        visited = set()  # set to keep track of seen nodes for O(1) look up
+        stack = [start]  # stack initialized with starting node
+        traversal = []
+
+        while stack:
+            current = stack.pop()  # keep track of current node
+            if current not in visited:  # if current has not been processed
+                visited.add(current)  # add to visited
+                traversal.append(current)
+
+                # check for neighbors; reverse the adjacency list to maintain the LIFO order
+                for neighbor in reversed(self.adj[current]):
+                    if neighbor not in visited:  # process neighbors accordingly
+                        stack.append(neighbor)
+
+        return traversal
+
+    def dfs_recursive(self, node, visited=None, traversal=None):
+        if visited is None:  # check for initial function run
+            visited = set()
+        if traversal is None:
+            traversal = []
+        visited.add(node)  # add the current node to the set
+        traversal.append(node)
+
+        for neighbor in self.adj[node]:  # check for neighbors
+            if neighbor not in visited:  # process neighbors
+                self.dfs_recursive(neighbor, visited, traversal)  # pass the neighbor AND the visited set
+
+        return traversal
+
     def print_graph(self):
         for node in self.adj:
             print(f"{node}: {self.adj[node]}")
-
-
-graph = Graph()
-graph.add_edge(1, 2)
-graph.add_edge(1, 3)
-graph.add_edge(2, 5)
-graph.add_edge(3, 4)
-print(graph.bfs())
