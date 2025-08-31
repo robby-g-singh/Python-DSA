@@ -1,5 +1,5 @@
 class UnionFind:
-    def __init__(self, n):
+    def __init__(self, n):  # NOTE: for inputs of pre-defined arbitrary values - use hash maps for parent and ranks!
         # Initially, each node is its own parent
         self.parent = [i for i in range(n)]
         # Rank helps to keep the tree shallow
